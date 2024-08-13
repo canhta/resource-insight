@@ -1,7 +1,7 @@
 import {
-  BillableRange,
   EmployeesRange,
   HumanResourceSpreadsheetId,
+  ProjectsRange,
   WeeklySummarySpreadsheetId,
 } from '@/configs/sheets';
 import { google } from 'googleapis';
@@ -48,41 +48,34 @@ export const getEmployees = async () => {
       } else {
         obj[header] = row[index];
       }
-      
+
       return obj;
     }, {} as { [key: string]: string | number | string[] });
   });
 };
 
-export const getReports = async (date: string, project?: string) => {
-  const sheetRange = `${date}!A:E`;
+export const getReports = async (date: string) => {
+  const sheetRange = `${date}!A:F`;
   const sheetData = await getSheetData(WeeklySummarySpreadsheetId, sheetRange);
   const headers = sheetData[0].map(toCamelCase);
 
-  const data = sheetData.slice(1).map((row) => {
+  return sheetData.slice(1).map((row) => {
     return headers.reduce((obj, header, index) => {
       obj[header] = row[index];
       return obj;
     }, {} as { [key: string]: string | number | Record<string, number> });
   });
-
-  if (project) {
-    return data.filter((report) => report.project === project);
-  }
-
-  return data;
 };
 
-export const getBillable = async () => {
+export const getProjects = async () => {
   const sheetData: string[][] = await getSheetData(
     HumanResourceSpreadsheetId,
-    BillableRange
+    ProjectsRange
   );
 
   const headers = sheetData[0].map(toCamelCase);
 
-  // Convert to array of objects with headers as keys
-  const data = sheetData.slice(1).map((row) => {
+  return sheetData.slice(1).map((row) => {
     return headers.reduce((obj, header, index) => {
       if (header === 'billable') {
         obj[header] = convertStringToObject(row[index]);

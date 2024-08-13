@@ -13,8 +13,8 @@ export const metadata: Metadata = {
 
 const routes: { route: string; label: string }[] = [
   { label: 'Dashboard', route: '/' },
-  { label: 'Org Chart', route: '/org-chart' },
-  { label: 'Headcount', route: '/headcount' },
+  { label: 'Org Chart', route: '/organizations' },
+  { label: 'Headcount Chart', route: '/headcount' },
   { label: 'Skill Chart', route: '/skills' },
 ];
 

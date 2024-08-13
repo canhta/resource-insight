@@ -40,7 +40,7 @@ Each segment in the chart represents an activity, and the size of each segment c
 
 ### 1.3. Google Sheets
 
-#### 1.3.1 Billable Sheets
+#### 1.3.1 Project Sheets
 
 These sheets represent the resources allocated to projects as provided by HR, including:
 

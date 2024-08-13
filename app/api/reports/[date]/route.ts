@@ -5,25 +5,30 @@ export async function GET(
   req: NextRequest,
   { params }: { params: { date: string } }
 ) {
-  const queries = new URL(req.url).searchParams;
-  const project = queries.get('project') || undefined;
-
   if (!params.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
     return NextResponse.json({ error: 'Invalid date format' }, { status: 400 });
   }
 
   try {
-    const reports = await getReports(params.date, project);
+    const reports = await getReports(params.date);
     const employees = await getEmployees();
 
     const reportsWithEmployees = reports.map((report) => {
       const employee = employees.find(
         (employee) => employee.employeeId === report.employeeId
       );
-      return {
-        ...report,
-        employee,
-      };
+
+      if (report.shadowFor) {
+        const shadowFor = employees.find(
+          (employee) => employee.employeeName === report.shadowFor
+        );
+
+        if (shadowFor) {
+          return { ...report, employee, shadowFor };
+        }
+      }
+
+      return { ...report, employee };
     });
 
     return NextResponse.json(reportsWithEmployees);

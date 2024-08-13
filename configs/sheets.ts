@@ -3,6 +3,6 @@ export const HumanResourceSpreadsheetId =
 export const WeeklySummarySpreadsheetId =
   process.env.WEEKLY_SUMMARY_SPREADSHEET_ID || '';
 
-export const BillableRange = 'Billable!A:D';
+export const ProjectsRange = 'Projects!A:D';
 export const EmployeesRange = 'Employees!A:G';
 export const WeeklySummaryRange = 'Weekly Summary!A:E';

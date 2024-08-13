@@ -36,6 +36,7 @@ function aggregateWeeklyReports() {
             'Employee Name',
             'Project',
             'Effort',
+            'Shadow For'
           ];
           summarySheet.appendRow(header);
         }

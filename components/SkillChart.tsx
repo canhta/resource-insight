@@ -48,7 +48,7 @@ const SkillChart = ({ data, project }: SkillChartProps) => {
     <Chart
       chartType='TreeMap'
       width='100%'
-      height='500px'
+      height='800px'
       data={chartData}
       options={options}
     />
