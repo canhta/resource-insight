@@ -1,34 +1,32 @@
-import { WeeklySummarySpreadsheetId } from '@/configs/sheets';
-import { getSheetData } from '@/lib/googleSheets';
-import { toCamelCase } from '@/lib/utils';
+import { getEmployees, getReports } from '@/lib/googleSheets';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
-  _: NextRequest,
+  req: NextRequest,
   { params }: { params: { date: string } }
 ) {
+  const queries = new URL(req.url).searchParams;
+  const project = queries.get('project') || undefined;
+
   if (!params.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
     return NextResponse.json({ error: 'Invalid date format' }, { status: 400 });
   }
 
-  const sheetRange = `${params.date}!A:E`;
-
   try {
-    const sheetData = await getSheetData(
-      WeeklySummarySpreadsheetId,
-      sheetRange
-    );
+    const reports = await getReports(params.date, project);
+    const employees = await getEmployees();
 
-    const headers = sheetData[0].map(toCamelCase);
-
-    const data = sheetData.slice(1).map((row) => {
-      return headers.reduce((obj, header, index) => {
-        obj[header] = row[index];
-        return obj;
-      }, {} as { [key: string]: string | number | Record<string, number> });
+    const reportsWithEmployees = reports.map((report) => {
+      const employee = employees.find(
+        (employee) => employee.employeeId === report.employeeId
+      );
+      return {
+        ...report,
+        employee,
+      };
     });
 
-    return NextResponse.json(data);
+    return NextResponse.json(reportsWithEmployees);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

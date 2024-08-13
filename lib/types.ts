@@ -6,3 +6,11 @@ export type Employee = {
   domains: string;
   level: string;
 };
+
+export type WeeklyReport = {
+  project: string;
+  startOfWeek: string;
+  employeeId: string;
+  employee: Employee;
+  effort: number;
+};

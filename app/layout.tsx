@@ -15,7 +15,7 @@ const routes: { route: string; label: string }[] = [
   { label: 'Dashboard', route: '/' },
   { label: 'Org Chart', route: '/org-chart' },
   { label: 'Headcount', route: '/headcount' },
-  { label: 'Resource Allocation', route: '/resource-allocation' },
+  { label: 'Skill Chart', route: '/skills' },
 ];
 
 export default function RootLayout({
