@@ -10,22 +10,19 @@ const auth = new google.auth.GoogleAuth({
 
 const sheets = google.sheets({ version: 'v4', auth });
 
-export const getSheetData = async (range: string) => {
-  const response = await sheets.spreadsheets.values.get({
-    spreadsheetId: process.env.GOOGLE_SHEET_ID!,
-    range,
-  });
-  return response.data.values;
-};
+export const getSheetData = async (spreadsheetId: string, range: string) => {
+  try {
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range,
+    });
 
-export const appendData = async (range: string, values: any[][]) => {
-  const response = await sheets.spreadsheets.values.append({
-    spreadsheetId: process.env.GOOGLE_SHEET_ID!,
-    range,
-    valueInputOption: 'RAW',
-    requestBody: {
-      values,
-    },
-  });
-  return response.data;
+    if (response.status !== 200) {
+      throw new Error(response.statusText);
+    }
+
+    return response.data.values as string[][];
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
 };

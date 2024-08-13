@@ -1,26 +1,29 @@
 'use client';
 
+import { Employee } from '@/lib/types';
 import { useEffect, useState } from 'react';
 
 export default function Home() {
-  const [data, setData] = useState<string[][]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
 
   useEffect(() => {
-    fetch('/api/sheets', { next: { revalidate: 3600 } })
+    fetch('/api/sheets/employees', { next: { revalidate: 3600 } })
       .then((response) => response.json())
       .then((data) => {
-        setData(data);
+        setEmployees(data);
       });
   }, []);
 
   return (
-    <main>
-      <h1>Google Sheets Data</h1>
+    <div>
+      <h1>Employees</h1>
       <ul>
-        {data.map((row, index) => (
-          <li key={index}>{row.join(', ')}</li>
+        {employees.map((employee) => (
+          <li key={employee.employeeId}>
+            {employee.employeeId} - {employee.employeeName} - {employee.level}
+          </li>
         ))}
       </ul>
-    </main>
+    </div>
   );
 }
