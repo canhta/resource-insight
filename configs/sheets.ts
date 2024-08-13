@@ -1,0 +1,1 @@
+export const SHEETS_RANGE = 'Weekly Data!A1:F833';
