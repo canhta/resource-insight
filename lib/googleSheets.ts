@@ -43,8 +43,8 @@ export const getEmployees = async () => {
 
   return sheetData.slice(1).map((row) => {
     return headers.reduce((obj, header, index) => {
-      if (header === 'coreSkills') {
-        obj[header] = row[index].split(',').map((skill) => skill.trim());
+      if (header === 'coreSkills' || header === 'domains') {
+        obj[header] = row[index].split(',').map((item) => item.trim());
       } else {
         obj[header] = row[index];
       }

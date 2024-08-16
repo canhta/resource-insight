@@ -3,7 +3,7 @@ export type Employee = {
   employeeName: string;
   lineManager: string;
   coreSkills: string[];
-  domains: string;
+  domains: string[];
   level: string;
   shadowFor?: Employee;
 };
