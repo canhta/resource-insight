@@ -18,9 +18,7 @@ export default function OrganizationPage() {
       next: { revalidate: 3600 },
     })
       .then((response) => response.json())
-      .then((data) => {
-        setProjects(data);
-      });
+      .then(setProjects);
   }, []);
 
   useEffect(() => {
@@ -31,9 +29,7 @@ export default function OrganizationPage() {
         next: { revalidate: 3600 },
       })
         .then((response) => response.json())
-        .then((data) => {
-          setReports(data);
-        });
+        .then(setReports);
     }
   }, [selectedDate]);
 

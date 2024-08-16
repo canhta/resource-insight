@@ -22,9 +22,7 @@ export default function SkillPage() {
         next: { revalidate: 3600 },
       })
         .then((response) => response.json())
-        .then((data) => {
-          setRecords(data);
-        });
+        .then(setRecords);
     }
   }, [selectedDate]);
 
@@ -33,9 +31,7 @@ export default function SkillPage() {
       next: { revalidate: 3600 },
     })
       .then((response) => response.json())
-      .then((data) => {
-        setProjects(data);
-      });
+      .then(setProjects);
   }, []);
 
   const coreSkillCount = useMemo(() => {
