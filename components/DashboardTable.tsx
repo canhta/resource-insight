@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   createColumnHelper,
   flexRender,
@@ -23,12 +23,20 @@ import { Employee } from '@/lib/types';
 
 type DashboardTableProps = {
   data: Employee[];
+  getEmployeeDetails: (id: string, slug: string) => Promise<Employee>;
 };
 
-const DashboardTable = ({ data = [] }: DashboardTableProps) => {
+const DashboardTable = ({
+  data = [],
+  getEmployeeDetails,
+}: DashboardTableProps) => {
   const [expanded, setExpanded] = useState<ExpandedState>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [employeeDetails, setEmployeeDetails] = useState<{
+    [key: string]: Employee;
+  }>({});
+
   const columnHelper = createColumnHelper<Employee>();
 
   const arrayFilter: FilterFn<Employee> = (
@@ -41,12 +49,30 @@ const DashboardTable = ({ data = [] }: DashboardTableProps) => {
     return filterValue.some((fv) => rowValue.includes(fv));
   };
 
+  const fetchEmployeeDetails = useCallback(
+    async (id: string, slug: string) => {
+      if (!employeeDetails[id]) {
+        const details = await getEmployeeDetails(id, slug);
+        setEmployeeDetails((prev) => ({ ...prev, [id]: details }));
+      }
+    },
+    [getEmployeeDetails, employeeDetails]
+  );
+
   const columns = useMemo(
     () => [
       columnHelper.display({
         id: 'expander',
         cell: ({ row }) => (
-          <button onClick={() => row.toggleExpanded()} className='pr-4'>
+          <button
+            onClick={() => {
+              row.toggleExpanded();
+              if (!row.getIsExpanded()) {
+                fetchEmployeeDetails(row.original.employeeId, 'projects');
+              }
+            }}
+            className='pr-4'
+          >
             {row.getIsExpanded() ? (
               <ChevronDown size={20} />
             ) : (
@@ -103,7 +129,7 @@ const DashboardTable = ({ data = [] }: DashboardTableProps) => {
         },
       }),
     ],
-    [columnHelper]
+    [columnHelper, fetchEmployeeDetails]
   );
 
   const table = useReactTable({
@@ -255,11 +281,59 @@ const DashboardTable = ({ data = [] }: DashboardTableProps) => {
                       className='px-6 py-4 bg-gray-50'
                     >
                       <div className='text-sm text-gray-700'>
-                        {row.original.shadowFor && (
-                          <p>
-                            <strong>Shadowing:</strong>{' '}
-                            {row.original.shadowFor.employeeName}
-                          </p>
+                        {employeeDetails[row.original.employeeId] ? (
+                          <div>
+                            <p>
+                              <strong>Employee ID:</strong>{' '}
+                              {
+                                employeeDetails[row.original.employeeId]
+                                  .employeeId
+                              }
+                            </p>
+                            <p>
+                              <strong>Name:</strong>{' '}
+                              {
+                                employeeDetails[row.original.employeeId]
+                                  .employeeName
+                              }
+                            </p>
+                            <p>
+                              <strong>Line Manager:</strong>{' '}
+                              {
+                                employeeDetails[row.original.employeeId]
+                                  .lineManager
+                              }
+                            </p>
+                            <p>
+                              <strong>Level:</strong>{' '}
+                              {employeeDetails[row.original.employeeId].level}
+                            </p>
+                            <p>
+                              <strong>Core Skills:</strong>{' '}
+                              {employeeDetails[
+                                row.original.employeeId
+                              ].coreSkills?.join(', ')}
+                            </p>
+                            <p>
+                              <strong>Domains:</strong>{' '}
+                              {employeeDetails[
+                                row.original.employeeId
+                              ].domains?.join(', ')}
+                            </p>
+                            {employeeDetails[row.original.employeeId]
+                              .shadowFor && (
+                              <p>
+                                <strong>Shadowing:</strong>{' '}
+                                {
+                                  employeeDetails[row.original.employeeId]
+                                    ?.shadowFor?.employeeName
+                                }
+                              </p>
+                            )}
+                            {/* Add any additional details you want to display */}
+                          </div>
+                        ) : (
+                          <p>Loading details...</p>
                         )}
                       </div>
                     </td>

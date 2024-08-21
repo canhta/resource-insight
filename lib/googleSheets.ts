@@ -67,6 +67,19 @@ export const getReports = async (date: string) => {
   });
 };
 
+export const getReportsByEmployee = async (
+  employeeId: string,
+  dates: string[]
+) => {
+  return await Promise.all(
+    dates.map(async (date) => {
+      return await getReports(date).then((reports) => {
+        return reports.filter((report) => report.employeeId === employeeId);
+      });
+    })
+  );
+};
+
 export const getProjects = async () => {
   const sheetData: string[][] = await getSheetData(
     HumanResourceSpreadsheetId,
